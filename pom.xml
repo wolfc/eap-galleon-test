@@ -35,8 +35,48 @@
 
     <packaging>pom</packaging>
 
+    <properties>
+        <org.jboss.eap.datasources.postgresql.driver.version>42.2.20</org.jboss.eap.datasources.postgresql.driver.version>
+    </properties>
+
+    <!-- Note that galleon-maven-plugin does not use Maven dependency
+         resolution properly, so having this section has no effect.
+    <dependencies>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.20</version>
+        </dependency>
+    </dependencies>
+    -->
+
     <build>
         <plugins>
+            <!-- The datasources-pack refers to these properties to bypass
+                 the lack of proper dependency resolution. -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>set-system-properties</goal>
+                        </goals>
+                        <configuration>
+                            <properties>
+                                <property>
+                                    <name>org.jboss.eap.datasources.postgresql.driver.version</name>
+                                    <value>42.2.20</value>
+                                </property>
+                                <!-- Alternatively
+                                <org.jboss.eap.datasources.postgresql.driver.version>${org.jboss.eap.datasources.postgresql.driver.version}</org.jboss.eap.datasources.postgresql.driver.version>
+                                -->
+                            </properties>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.jboss.galleon</groupId>
                 <artifactId>galleon-maven-plugin</artifactId>
@@ -59,6 +99,9 @@
                                     <groupId>org.jboss.eap</groupId>
                                     <artifactId>eap-datasources-galleon-pack</artifactId>
                                     <version>7.4.0.GA-redhat-00003</version>
+                                    <included-packages>
+                                        <name>org.postgresql.jdbc</name>
+                                    </included-packages>
                                 </feature-pack>
                             </feature-packs>
                         </configuration>
